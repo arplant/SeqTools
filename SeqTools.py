@@ -32,20 +32,27 @@ class Sequence:
             while seq_idx < len(seq):
                 if len(codon) < 3:
                     codon.append(seq[seq_idx])
+                    seq_idx += 1
                 else:
                     residue = ''.join(str(base) for base in codon)
                     codon_list.append(residue)
                     codon.clear()
-                seq_idx += 1
             return codon_list
-        
+            
         codons = _codonise(seq)
         aa_residues = []
         for i in codons:
+            print(i)
             aa_residues.append(table[i])
         return aa_residues
     
-    
+"""    
+    def orf(self, aa_residues):
+        start = 0
+        while aa_residues[start] != '*':
+            start += 1
+        return aa_residues[:start]
+"""   
         
 
 table = {
@@ -115,10 +122,10 @@ table = {
     'ggt': 'G' 
 }
 
-seq = "atgatcatactagactag"
+seq = "atgatcatactagacttagaaaaaa"
 residues = list(seq)
 
 mySeq = Sequence(residues, table)
 #mySeq.printSeq()
-print(mySeq.reverse())
+#print(mySeq.reverse())
 print(mySeq.translate())
