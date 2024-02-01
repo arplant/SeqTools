@@ -7,53 +7,8 @@ Sequence tools
 @author: Alast
 """
 
-class Sequence:
-    def __init__(self, seq, codon_table):
-        self.seq = seq
-        self.codon_table = codon_table
-    
-    def printSeq(self):
-        print(self.seq)
 
-    def reverse(self):
-        rev = []
-        seqLength = len(seq) - 1
-        for idx in range(seqLength, -1, -1):
-            rev.append(seq[idx])
-        reverseSeq = ''.join(str(base) for base in rev)
-        return reverseSeq
-    
-    def translate(self):
-        
-        def _codonise(self):
-            seq_idx = 0
-            codon = []
-            codon_list = []
-            while seq_idx < len(seq):
-                if len(codon) < 3:
-                    codon.append(seq[seq_idx])
-                    seq_idx += 1
-                else:
-                    residue = ''.join(str(base) for base in codon)
-                    codon_list.append(residue)
-                    codon.clear()
-            return codon_list
-            
-        codons = _codonise(seq)
-        aa_residues = []
-        for i in codons:
-            print(i)
-            aa_residues.append(table[i])
-        return aa_residues
-    
-"""    
-    def orf(self, aa_residues):
-        start = 0
-        while aa_residues[start] != '*':
-            start += 1
-        return aa_residues[:start]
-"""   
-        
+seq = "atgatcatgatactactatactgagacttagatgaaatgaaacccaggtccatatgatga"
 
 table = {
     'tca': 'S',
@@ -122,10 +77,92 @@ table = {
     'ggt': 'G' 
 }
 
-seq = "atgatcatactagacttagaaaaaa"
+class Sequence:
+    def __init__(self, seq, codon_table):
+        self.seq = seq
+        self.codon_table = codon_table
+        self.aa_seq = []
+        self.orfs = []
+    
+    def printSeq(self):
+        print(self.seq)
+
+    def reverse(self):
+        rev = []
+        seqLength = len(seq) - 1
+        for idx in range(seqLength, -1, -1):
+            rev.append(seq[idx])
+        reverseSeq = ''.join(str(base) for base in rev)
+        return reverseSeq
+    
+    def translate(self):
+        
+        def _codonise(self):
+            seq_idx = 0
+            codon = []
+            codon_list = []
+            while seq_idx < len(seq):
+                if len(codon) < 3:
+                    codon.append(seq[seq_idx])
+                    seq_idx += 1
+                else:
+                    residue = ''.join(str(base) for base in codon)
+                    codon_list.append(residue)
+                    codon.clear()
+            return codon_list
+            
+        codons = _codonise(seq)
+        for i in codons:
+            #print(i)
+            self.aa_seq.append(table[i])
+        return self.aa_seq
+    
+   
+    def find_pep(self):
+        pos = 0
+        #pep =[]
+        while self.aa_seq[pos] != '*' and pos < len(self.aa_seq) -1:
+            pos += 1
+            # print(self.aa_seq[pos])
+        pep = self.aa_seq[:pos + 1]
+        return pep
+
+
+"""
+Standalone method for peptides
+- Returns open translation frames in list of lists
+- Recursive implementation returns nested frames
+- Worst performance ('MMMMMM...') is O(n2) so not great
+- This method is a precursor to an ORF finder
+"""
+def find_pep_recursive(aa_seq, pos, arr=[]):
+    start = pos
+    print(start, pos)
+    print("Iteration ", pos)
+    while aa_seq[pos] != '*' and pos < len(aa_seq) - 1:
+        pos += 1
+        if aa_seq[pos] == 'M' and pos > 0:
+            find_pep_recursive(aa_seq, pos, arr)
+    pep = aa_seq[start:pos]
+    arr.append(pep)
+    return arr
+
+
+
+# Convert sequence to list of individual residues
 residues = list(seq)
 
 mySeq = Sequence(residues, table)
+aa_seq = mySeq.translate()
+
+print(find_pep_recursive(aa_seq, 0))
+
+
+
+
+#print("Variables")
+#print(vars(mySeq))
+
 #mySeq.printSeq()
 #print(mySeq.reverse())
-print(mySeq.translate())
+#print(mySeq.translate())
